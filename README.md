@@ -1,4 +1,4 @@
-# Run mash, read subsampling and the mSWEEp pipeline on Sanger farm
+# Run mash, read subsampling and the mSWEEP pipeline on Sanger farm
 ```
 cd ../scripts
 ```
