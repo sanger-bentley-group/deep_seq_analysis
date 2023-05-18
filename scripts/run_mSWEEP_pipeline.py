@@ -6,10 +6,10 @@ import shutil
 from collections import defaultdict
 
 THEMISTO_ALIGN = "/nfs/users/nfs_g/gt4/lustre/maela_deep/msweep/Themisto/build/bin/pseudoalign"
-THEMISTO_INDEX = "/nfs/users/nfs_g/gt4/lustre/maela_deep/msweep/themisto_index"
-FASTA_FILE = "/lustre/scratch118/infgen/team284/vc11/ANALYSIS/deep_seq/data/combined_vietnam_fasta.fa"
+THEMISTO_INDEX = "/nfs/users/nfs_v/vc11/scratch/ANALYSIS/deep_seq/data/themisto_index_vietnam"
+# FASTA_FILE = "/nfs/users/nfs_v/vc11/scratch/ANALYSIS/deep_seq/data/combined_vietnam.fna"
 # GROUP_FILE = "./msweep/themisto_gpsc_groups.tab"
-COL_GROUP_FILE = "/lustre/scratch118/infgen/team284/vc11/ANALYSIS/deep_seq/data/themisto_gpsc_groups_vietnam_single_col.txt"
+COL_GROUP_FILE = "/nfs/users/nfs_v/vc11/scratch/ANALYSIS/deep_seq/data/themisto_gpsc_groups_vietnam_single_col.txt" 
 MSWEEP = "/nfs/users/nfs_g/gt4/lustre/maela_deep/msweep/mSWEEP/build/bin/mSWEEP"
 MGEMS = "/nfs/users/nfs_g/gt4/lustre/maela_deep/msweep/mGEMS/build/bin/mGEMS"
 
@@ -149,6 +149,7 @@ def main():
     cmd += "-i " + args.group_column + " "
     cmd += "--write-probs "
     cmd += "-t " + str(args.ncpu) + " "
+    # cmd += "--themisto-index " + args.index + " "
     cmd += "-o " + args.output_dir + "mSWEEP"
 
     subprocess.run(cmd, shell=True, check=True)
