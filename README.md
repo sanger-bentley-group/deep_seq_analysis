@@ -1,8 +1,14 @@
-# Deep Sequencing Pipeline for _Streptococcus Pneumoniae_ in Vietnam
+# Deep Sequencing Pipeline for _Streptococcus Pneumoniae_ within-host diversity in Vietnam
 
 _Author: Victoria Dyster_
 
-_Credits: Adapted from Gerry Tonkin-Hill's [pipeline](https://www.nature.com/articles/s41564-022-01238-1)_
+_Credits:_
+
+- _Adapted from Gerry Tonkin-Hill's [pipeline](https://www.nature.com/articles/s41564-022-01238-1)_
+
+- _Ana Ferreira for running the QC and PopPUNK to get GPSCs for the isolates_
+
+- _Gemma Murray for help getting started_
 
 ## Get symlinks of all isolate assemblies
 
