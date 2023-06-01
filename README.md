@@ -94,7 +94,7 @@ bsub -G team284 -q normal -J combine_fastas -o ../log/combine_fastas.out -e ../l
 
 _\*Run by Ana Ferreira_
 
-## Output of the mSWEEP pipeline
+## Outputs from pipeline
 
 The output files can be found in study folders within `/nfs/users/nfs_v/vc11/scratch/ANALYSIS/deep_seq/data/msweep_output`. Each output is separated in directories called by the lane id of the deep sequence and number of reads that they were subsampled to and contain:
 
@@ -103,3 +103,24 @@ The output files can be found in study folders within `/nfs/users/nfs_v/vc11/scr
 - `fastq.gz` files: the reads that have been identified belonging to a particular GPSC
 - directories named after the GPSC number: contain the assemblies of the GPSCs as `contigs.fa` and the serotype in `*_seroba` directory _(Note: NA may exist if there were alignments to isolate genome(s) that had no GPSC)_
 - `tmp` directory: contains the alignment files where the deep sequences were aligned (with Themisto) to the reference
+
+## Build phylogenetic trees from output deconvoluted reads
+
+Create phylogenetic trees from deconvoluted reads [using snippy, gubbins, snp-sites and FastTree](https://github.com/tseemann/snippy)
+
+In the scripts directory:
+```
+# Create an input.txt file for snippy
+find /nfs/users/nfs_v/vc11/scratch/ANALYSIS/deep_seq/data/msweep_output/6461/*/ /nfs/users/nfs_v/vc11/scratch/ANALYSIS/deep_seq/data/msweep_output/6463/*/ -type f -name "*_1.fastq.gz" > ../data/path_to_reads_1.txt
+find /nfs/users/nfs_v/vc11/scratch/ANALYSIS/deep_seq/data/msweep_output/6461/*/ /nfs/users/nfs_v/vc11/scratch/ANALYSIS/deep_seq/data/msweep_output/6463/*/ -type f -name "*_2.fastq.gz" > ../data/path_to_reads_2.txt
+cat ../data/path_to_reads_1.txt | awk -F/ '{print $12"_"$13}' | awk -F'_1.fastq.gz' '{print $1}' > ../data/msweep_samples.txt
+paste -d $'\t' ../data/msweep_samples.txt ../data/path_to_reads_1.txt ../data/path_to_reads_2.txt | grep -v "_NA" > ../data/snippy_input.tab
+
+# Build trees (tested with 10)
+head ../data/snippy_input.tab > ../data/snippy_input_head.tab
+bsub -G team284 -q normal -J build_tree -o ../log/build_tree.out -e ../log/build_tree.err -R"span[hosts=1]" -R "select[mem>16000] rusage[mem=16000]" -M16000 -n 4 "./run_build_trees.sh /nfs/users/nfs_v/vc11/scratch/ANALYSIS/deep_seq/data/snippy_input_head.tab /data/pam/applications/vr-pipelines/refs/Streptococcus/pneumoniae_ATCC_700669/Streptococcus_pneumoniae_ATCC_700669_v1.fa 4 ../data/test_build_tree"
+
+# Build trees (not implemented)
+bsub -G team284 -q normal -J build_tree -o ../log/build_tree.out -e ../log/build_tree.err -R"span[hosts=1]" -R "select[mem>64000] rusage[mem=64000]" -M64000 -n 16 "./run_build_trees.sh /nfs/users/nfs_v/vc11/scratch/ANALYSIS/deep_seq/data/snippy_input.tab /data/pam/applications/vr-pipelines/refs/Streptococcus/pneumoniae_ATCC_700669/Streptococcus_pneumoniae_ATCC_700669_v1.fa 16 <your_output_directory_here>"
+```
+
