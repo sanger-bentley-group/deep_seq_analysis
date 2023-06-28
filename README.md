@@ -111,6 +111,10 @@ For example:
 bsub.py 16 mash_screen ./run_mash_screen.sh /nfs/users/nfs_v/vc11/scratch/ANALYSIS/deep_seq/data/lanes_6461.txt /nfs/users/nfs_v/vc11/scratch/ANALYSIS/deep_seq/data/mash_output_vietnam_6461 /nfs/users/nfs_v/vc11/scratch/ANALYSIS/deep_seq/data/vietnam_combined.msh
 ```
 
+4. **Assessment**
+
+The mash screen outputs will contain a score over 1000 on similarity with references. If you do not get any scores or very few scores above 990, then you may need to consider using a better reference before proceeding.
+
 ## Run mSWEEP Pipeline
 
 1. **Build Themisto index on this reference**
