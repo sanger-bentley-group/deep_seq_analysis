@@ -1,4 +1,4 @@
-# Deep Sequencing Pipeline for _Streptococcus Pneumoniae_ within-host diversity in Vietnam
+# Deep sequencing pipeline for the farm
 
 _Author: Victoria Dyster_
 
@@ -9,6 +9,10 @@ _Credits:_
 - _Ana Ferreira for running the QC and PopPUNK to get GPSCs for the isolates_
 
 - _Gemma Murray for help getting started_
+
+## Introduction
+
+This pipeline deconvolutes mixed-microbial reads into designated groups (e.g. multiple `Streptococcus pneumonaie` into GPSCs), assembles the deconvoluted reads and gets the serotypes.
 
 ## Download these scripts
 
