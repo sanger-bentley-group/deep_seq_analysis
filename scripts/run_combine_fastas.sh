@@ -2,7 +2,7 @@
 
 lanes_file=$1
 assemblies_dir=$2
-combined_file=/nfs/users/nfs_v/vc11/scratch/ANALYSIS/deep_seq/data/combined_vietnam.fna
+combined_file=$3
 
 rm ${combined_file}
 num=$(cat ${lanes_file} | wc -l)

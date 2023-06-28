@@ -10,93 +10,154 @@ _Credits:_
 
 - _Gemma Murray for help getting started_
 
-## Get symlinks of all isolate assemblies
+## Download these scripts
+
+In your lustre, download this repo.
+
+```
+git clone https://github.com/blue-moon22/deep_seq_analysis.git
+cd deep_seq_analysis
+```
+
+## Create a reference database (using lanes from pf)
+
+1. **Get your isolate assemblies**
+
+First go into your lustre and create a directory for your analysis. 
+
+```
+mkdir -p data
+```
+
+Then create symlinks of isolate assemblies from a list of lanes.
 
 ```
 module load pf
-cd /nfs/users/nfs_v/vc11/scratch/DATABASES/lays_isolates/data
-pf assembly -i /nfs/users/nfs_v/vc11/scratch/DATABASES/lays_isolates/lanes.txt -t file -l
+
+pf assembly -i <list of reference lanes file> -t file -l <output directory>
 ```
 
-## Set working directory
+For example:
 
 ```
-cd /nfs/users/nfs_v/vc11/scratch/DATABASES/lays_isolates/scripts
+pf assembly -i /nfs/users/nfs_v/vc11/scratch/DATABASES/lays_isolates/lanes.txt -t file -l $(pwd)/data/assemblies
 ```
 
-## Find similarity of deep sequences to isolate assemblies
-
-1. Create mash sketch (i.e. reference) for each Vietnam isolate assembly (uses all lanes)
+2. **Combine isolate assemblies to make one reference FASTA (only lanes that have passed QC\*)**
 
 ```
-./run_mash_sketch.sh /nfs/users/nfs_v/vc11/scratch/DATABASES/lays_isolates/lanes.txt
+module load bsub.py
+
+bsub.py 16 combine_fastas ./run_combine_fastas.sh <list of reference lanes file> <assemblies directory> <output combined fna file>
 ```
 
-2. Run mash paste (i.e. combine mash references)
+For example:
 
 ```
-bsub -G team284 -q normal -J mash_paste -o ../log/mash_paste.out -e ../log/mash_paste.err -R"span[hosts=1]" -R "select[mem>16000] rusage[mem=16000]" -M16000 './run_mash_paste.sh'
+bsub.py 16 combine_fastas ./run_combine_fastas.sh /nfs/users/nfs_v/vc11/scratch/ANALYSIS/deep_seq/data/lanes_passed.txt /nfs/users/nfs_v/vc11/scratch/ANALYSIS/deep_seq/data/assemblies /nfs/users/nfs_v/vc11/scratch/ANALYSIS/deep_seq/data/combined_vietnam.fna
 ```
 
-3. Run mash screen for study 6461 (i.e. align deep sequences from study 6461 against mash reference)
+_\*If you are using GPS, ask a team member where the list of passed lanes can be found_
+
+## Check your reference database
+
+Classifying your reads to lineages from your deep-sequenced mixed-microbial sample requires a comprehensive reference database that is representative of the microbial diversity in the geographical region and time frame. For example, it is unlikely you will get an accurate final outcome of this analysis if you're analysing mixed-microbial sequences in Country A using a reference database containing very few isolate genomes from Country A. To quickly check whether your reference isolates will be sufficient for your analysis, we use mash.
+
+1. **Create mash sketch (i.e. mash reference) using your reference lanes**
 
 ```
-bsub -G team284 -q normal -J mash_screen -o ../log/mash_screen_6461.out -e ../log/mash_screen_6461.err -R"span[hosts=1]" -R "select[mem>16000] rusage[mem=16000]" -M16000 './run_mash_screen.sh /nfs/users/nfs_v/vc11/scratch/ANALYSIS/deep_seq/data/lanes_6461.txt /nfs/users/nfs_v/vc11/scratch/ANALYSIS/deep_seq/data/mash_output_vietnam_6461'
+./run_mash_sketch.sh \
+    <list of reference lanes> \
+    <assemblies directory> \
+    <output mash sketches directory>
 ```
 
-4. Run mash screen for study 6463 (i.e. align deep sequences from study 6463 against mash reference)
+For example:
 
 ```
-bsub -G team284 -q normal -J mash_screen -o ../log/mash_screen_6463.out -e ../log/mash_screen_6463.err -R"span[hosts=1]" -R "select[mem>16000] rusage[mem=16000]" -M16000 './run_mash_screen.sh /nfs/users/nfs_v/vc11/scratch/ANALYSIS/deep_seq/data/lanes_6463.txt /nfs/users/nfs_v/vc11/scratch/ANALYSIS/deep_seq/data/mash_output_vietnam_6463'
+./run_mash_sketch.sh \
+    /nfs/users/nfs_v/vc11/scratch/ANALYSIS/deep_seq/data/lanes_passed.txt \
+    /nfs/users/nfs_v/vc11/scratch/ANALYSIS/deep_seq/data/assemblies \
+    /nfs/users/nfs_v/vc11/scratch/ANALYSIS/deep_seq/data/mash_sketches_vietnam
+```
+
+2. **Run mash paste (i.e. combine mash references)**
+
+```
+module load bsub.py
+
+bsub.py 16 mash_paste ./run_mash_paste.sh <mash sketches directory> <output mash file>
+```
+
+For example:
+
+```
+bsub.py 16 mash_paste ./run_mash_paste.sh /nfs/users/nfs_v/vc11/scratch/ANALYSIS/deep_seq/data/mash_sketches_vietnam /nfs/users/nfs_v/vc11/scratch/ANALYSIS/deep_seq/data/vietnam_combined.msh
+```
+
+3. **Run mash screen (i.e. map deep sequences against mash reference)**
+
+```
+bsub.py 16 mash_screen ./run_mash_screen.sh <list of deep seq lanes file> <output mash screens directory> <combine mash reference>
+```
+
+For example:
+
+```
+bsub.py 16 mash_screen ./run_mash_screen.sh /nfs/users/nfs_v/vc11/scratch/ANALYSIS/deep_seq/data/lanes_6461.txt /nfs/users/nfs_v/vc11/scratch/ANALYSIS/deep_seq/data/mash_output_vietnam_6461 /nfs/users/nfs_v/vc11/scratch/ANALYSIS/deep_seq/data/vietnam_combined.msh
 ```
 
 ## Run mSWEEP Pipeline
 
-1. Subsample to 1 million reads for each deep sequenced sample (for low storage size alignments) for:
-
-- study 6461
+1. **Build Themisto index on this reference**
 
 ```
-bsub -G team284 -q normal -J seqtk -o ../log/seqtk_6461.out -e ../log/seqtk_6461.err -R"span[hosts=1]" -R "select[mem>16000] rusage[mem=16000]" -M16000 './run_seqtk.sh 6461 /nfs/users/nfs_v/vc11/scratch/ANALYSIS/deep_seq/data/lanes_6461.txt'
+./run_themisto_build.sh \
+    <reference fna> \
+    <output themisto index>
 ```
 
-- study 6463
+For example:
 
 ```
-bsub -G team284 -q normal -J seqtk -o ../log/seqtk_6463.out -e ../log/seqtk_6463.err -R"span[hosts=1]" -R "select[mem>16000] rusage[mem=16000]" -M16000 './run_seqtk.sh 6463 /nfs/users/nfs_v/vc11/scratch/ANALYSIS/deep_seq/data/lanes_6463.txt'
+./run_themisto_build.sh \
+    /nfs/users/nfs_v/vc11/scratch/ANALYSIS/deep_seq/data/combined_vietnam.fna \
+    /nfs/users/nfs_v/vc11/scratch/ANALYSIS/deep_seq/data/themisto_index_vietnam
 ```
 
-2. Combine isolate assemblies to make one reference FASTA (only lanes that have passed QC\*)
+2. **Run themisto align and mSWEEP**
+
+You will also need:
+- Seroba database
+- GPSC assignment external clusters csv for your reference lanes (from popPUNK)
 
 ```
-bsub -G team284 -q normal -J combine_fastas -o ../log/combine_fastas.out -e ../log/combine_fastas.err -R"span[hosts=1]" -R "select[mem>16000] rusage[mem=16000]" -M16000 './run_combine_fastas.sh /nfs/users/nfs_v/vc11/scratch/ANALYSIS/deep_seq/data/lanes_passed.txt /nfs/users/nfs_v/vc11/scratch/ANALYSIS/deep_seq/data/assemblyfind_lanes.txt'
+./run_msweep_pipeline.sh \
+    <list of deep seq lanes file> \
+    <list of reference lanes file> \
+    <reference fna> \
+    <themisto index> \
+    <gpsc assignment csv> \
+    <seroba database> \
+    <msweep output directory>
 ```
 
-3. Build Themisto index on this reference
+For example:
 
 ```
-./run_themisto_build.sh /nfs/users/nfs_v/vc11/scratch/ANALYSIS/deep_seq/data/combined_vietnam.fna /nfs/users/nfs_v/vc11/scratch/ANALYSIS/deep_seq/data/themisto_index_vietnam
+./run_msweep_pipeline.sh \
+    /nfs/users/nfs_v/vc11/scratch/ANALYSIS/deep_seq/data/deep_seq_lanes.txt \
+    /nfs/users/nfs_v/vc11/scratch/ANALYSIS/deep_seq/data/lanes_passed.txt \
+    /nfs/users/nfs_v/vc11/scratch/ANALYSIS/deep_seq/data/combined_vietnam.fna \
+    /nfs/users/nfs_v/vc11/scratch/ANALYSIS/deep_seq/data/themisto_index_vietnam \
+    /nfs/users/nfs_v/vc11/scratch/ANALYSIS/deep_seq/data/GPSC_assignment_external_clusters.csv \
+    /nfs/users/nfs_g/gt4/lustre/maela_deep/msweep/seroba/database \
+    /nfs/users/nfs_v/vc11/scratch/ANALYSIS/deep_seq/data/msweep_output
 ```
-
-4. Run themisto align and mSWEEP for:
-
-- study 6461
-
-```
-./run_msweep_pipeline.sh 6461 /nfs/users/nfs_v/vc11/scratch/ANALYSIS/deep_seq/data/sampled_reads/6461
-```
-
-- study 6463
-
-```
-./run_msweep_pipeline.sh 6463 /nfs/users/nfs_v/vc11/scratch/ANALYSIS/deep_seq/data/sampled_reads/6463
-```
-
-_\*Run by Ana Ferreira_
 
 ## Outputs from pipeline
 
-The output files can be found in study folders within `/nfs/users/nfs_v/vc11/scratch/ANALYSIS/deep_seq/data/msweep_output`. Each output is separated in directories called by the lane id of the deep sequence and number of reads that they were subsampled to and contain:
+The output files can be found in study folders within the msweep output directory you specified above. Each output is separated in directories called by the lane id of the deep sequence and number of reads that they were subsampled to and contain:
 
 - `mSWEEP_abundances.txt`: the relative proportion of GPSCs
 - `seroba_calls.txt`: the serotypes found

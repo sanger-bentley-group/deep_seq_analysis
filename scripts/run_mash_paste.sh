@@ -1,9 +1,10 @@
 #!/usr/bin/env bash
 
-dir=../data/mash_sketches_vietnam
+dir=$1
+output_mash_file=$2
 
 module load mash/2.1.1--he518ae8_0
 
 mkdir -p ../log
 
-mash paste ../data/vietnam_combined.msh ${dir}/*.msh 
+mash paste $output_mash_file ${dir}/*.msh 

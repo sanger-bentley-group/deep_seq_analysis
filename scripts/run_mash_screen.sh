@@ -2,7 +2,7 @@
 
 lanes_file=$1
 mash_output_dir=$2
-reference=../data/vietnam_combined.msh
+reference=$3
 threads=4
 
 module load pf

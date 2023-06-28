@@ -5,23 +5,17 @@ import tempfile
 import shutil
 from collections import defaultdict
 
-THEMISTO_ALIGN = "/nfs/users/nfs_g/gt4/lustre/maela_deep/msweep/Themisto/build/bin/pseudoalign"
-THEMISTO_INDEX = "/nfs/users/nfs_v/vc11/scratch/ANALYSIS/deep_seq/data/themisto_index_vietnam"
-# FASTA_FILE = "/nfs/users/nfs_v/vc11/scratch/ANALYSIS/deep_seq/data/combined_vietnam.fna"
-# GROUP_FILE = "./msweep/themisto_gpsc_groups.tab"
-COL_GROUP_FILE = "/nfs/users/nfs_v/vc11/scratch/ANALYSIS/deep_seq/data/themisto_gpsc_groups_vietnam_single_col.txt" 
-MSWEEP = "/nfs/users/nfs_g/gt4/lustre/maela_deep/msweep/mSWEEP/build/bin/mSWEEP"
-MGEMS = "/nfs/users/nfs_g/gt4/lustre/maela_deep/msweep/mGEMS/build/bin/mGEMS"
-
+THEMISTO_ALIGN = "themisto pseudoalign"
+ALIGNMENT_WRITER = "alignment-writer"
+MSWEEP = "mSWEEP"
+MGEMS = "mGEMS"
 SHOVILL = "shovill"
-
 SEROBA = "seroba"
-SEROBA_DB = "/nfs/users/nfs_g/gt4/lustre/maela_deep/msweep/seroba/database"
 
 def get_options():
     import argparse
 
-    description = 'Run the mSWEEP algorithm on deep sequenced S. pneumoniae samples using the GPS project as reference.'
+    description = 'Run the mSWEEP algorithm on deep sequenced samples using a themisto index reference.'
     parser = argparse.ArgumentParser(description=description,
                                      prog='run-mSWEEP')
 
@@ -41,6 +35,20 @@ def get_options():
         type=str,
         help="reverse reads (fastq)")
 
+    io_opts.add_argument(
+        "-n",
+        dest="ref_num",
+        required=True,
+        type=int,
+        help="number of references")
+    
+    io_opts.add_argument(
+        "-r",
+        dest="read_num",
+        required=True,
+        type=int,
+        help="number of reads")
+        
     io_opts.add_argument("-o",
                          "--out_dir",
                          dest="output_dir",
@@ -60,15 +68,24 @@ def get_options():
     parser.add_argument(
         "--index",
         dest="index",
-        default=THEMISTO_INDEX,
+        required=True,
+        default=None,
         help=("location of mSWEEP index folder. Set to a prebuilt one on the farm by default."))
 
     parser.add_argument(
         "--group_column",
         dest="group_column",
-        default=COL_GROUP_FILE,
+        required=True,
+        default=None
         help=("location of file containing single column with group allocation (must match index and is set to the default on the farm)."))
 
+    parser.add_argument(
+        "--seroba_db",
+        dest="seroba_db",
+        required=True,
+        default=None
+        help=("Location of the seroba database."))    
+    
     parser.add_argument(
         "--mem",
         dest="max_mem",
@@ -127,29 +144,46 @@ def main():
         outfile.write(aln1 + "\n")
         outfile.write(aln2 + "\n")
 
-    # generate align command and run
+    # generate align command and run for pair 1
     cmd = THEMISTO_ALIGN + " "
-    cmd += "--index-dir " + args.index + " "
+    cmd += "--index-prefix " + args.index + " "
     cmd += "--rc --temp-dir " + temp_dir + " "
     cmd += "--n-threads " + str(args.ncpu) + " "
-    # cmd += "--mem-megas " + str(args.max_mem) + " "
-    cmd += "--query-file-list " + query_list + " "
-    cmd += "--outfile-list " + out_list + " "
-    cmd += " --sort-output --gzip-output"
-
+    cmd += "--query-file " + args.read1 + " "
+    cmd += "--out-file-list " + out_list + " "
+    cmd += "--sort-output"
+    cmd += " | "
+    cmd += ALIGNMENT_WRITER + " "
+    cmd += "-n " + args.ref_num + " "
+    cmd += "-r " + args.read_num + " "
+    cmd += "> " + aln1
+    
+    subprocess.run(cmd, shell=True, check=True)
+    
+    # generate align command and run for pair 2
+    cmd = THEMISTO_ALIGN + " "
+    cmd += "--index-prefix " + args.index + " "
+    cmd += "--rc --temp-dir " + temp_dir + " "
+    cmd += "--n-threads " + str(args.ncpu) + " "
+    cmd += "--query-file " + args.read2 + " "
+    cmd += "--out-file-list " + out_list + " "
+    cmd += "--sort-output"
+    cmd += " | "
+    cmd += ALIGNMENT_WRITER + " "
+    cmd += "-n " + args.ref_num + " "
+    cmd += "-r " + args.read_num + " "
+    cmd += "> " + aln2
+    
     subprocess.run(cmd, shell=True, check=True)
 
     # run mSWEEP
     print("running mSWEEP")
     cmd = MSWEEP + " "
-    cmd += "--themisto-1 " + aln1 + ".gz "
-    cmd += "--themisto-2 " + aln2 + ".gz "
-    # cmd += "--fasta " + args.group_fasta + " "
-    # cmd += "--groups-list " + args.group_index + " "
+    cmd += "--themisto-1 " + aln1 + " "
+    cmd += "--themisto-2 " + aln2 + " "
     cmd += "-i " + args.group_column + " "
     cmd += "--write-probs "
     cmd += "-t " + str(args.ncpu) + " "
-    # cmd += "--themisto-index " + args.index + " "
     cmd += "-o " + args.output_dir + "mSWEEP"
 
     subprocess.run(cmd, shell=True, check=True)
@@ -167,9 +201,9 @@ def main():
     print("running mGEMS")
     cmd = MGEMS + " "
     cmd += "-r " + args.read1 + "," + args.read2 + " "
-    cmd += "--themisto-alns " + aln1 + ".gz," + aln2 + ".gz "
+    cmd += "--themisto-alns " + aln1 + "," + aln2 + " "
     cmd += "-o " + args.output_dir + " "
-    cmd += "--index " + THEMISTO_INDEX + " "
+    cmd += "--index " + args.index + " "
     cmd += "--probs " + args.output_dir + "mSWEEP_probs.csv "
     cmd += "-a " + args.output_dir + "mSWEEP_abundances.txt "
     cmd += "--groups " + ",".join(sig_groups)
@@ -197,7 +231,7 @@ def main():
         assem_out = args.output_dir + group + '/'
         os.chdir(assem_out)
         cmd = SEROBA + " runSerotyping "
-        cmd += SEROBA_DB + " "
+        cmd += args.seroba_db + " "
         cmd += args.output_dir + group + "_1.fastq.gz "
         cmd += args.output_dir + group + "_2.fastq.gz "
         cmd += group + "_seroba"
