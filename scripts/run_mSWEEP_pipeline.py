@@ -5,9 +5,9 @@ import tempfile
 import shutil
 from collections import defaultdict
 
-THEMISTO_ALIGN = "themisto pseudoalign"
+THEMISTO_ALIGN = "/nfs/users/nfs_v/vc11/scratch/ANALYSIS/deep_seq/themisto pseudoalign"
 ALIGNMENT_WRITER = "alignment-writer"
-MSWEEP = "mSWEEP"
+MSWEEP = "/nfs/users/nfs_v/vc11/scratch/ANALYSIS/deep_seq/mSWEEP/build/bin/mSWEEP"
 MGEMS = "mGEMS"
 SHOVILL = "shovill"
 SEROBA = "seroba"
@@ -76,14 +76,14 @@ def get_options():
         "--group_column",
         dest="group_column",
         required=True,
-        default=None
+        default=None,
         help=("location of file containing single column with group allocation (must match index and is set to the default on the farm)."))
 
     parser.add_argument(
         "--seroba_db",
         dest="seroba_db",
         required=True,
-        default=None
+        default=None,
         help=("Location of the seroba database."))    
     
     parser.add_argument(
@@ -138,6 +138,8 @@ def main():
         outfile.write(args.read2 + "\n")
 
     out_list = temp_dir + "out_list.txt"
+    aln1_txt = temp_dir + "pseudoalignments_1.txt"
+    aln2_txt = temp_dir + "pseudoalignments_2.txt"
     aln1 = temp_dir + "pseudoalignments_1.aln"
     aln2 = temp_dir + "pseudoalignments_2.aln"
     with open(out_list, 'w') as outfile:
@@ -150,12 +152,11 @@ def main():
     cmd += "--rc --temp-dir " + temp_dir + " "
     cmd += "--n-threads " + str(args.ncpu) + " "
     cmd += "--query-file " + args.read1 + " "
-    cmd += "--out-file-list " + out_list + " "
-    cmd += "--sort-output"
+    cmd += "--sort-output " 
     cmd += " | "
     cmd += ALIGNMENT_WRITER + " "
-    cmd += "-n " + args.ref_num + " "
-    cmd += "-r " + args.read_num + " "
+    cmd += "-n " + str(args.ref_num) + " "
+    cmd += "-r " + str(args.read_num) + " "
     cmd += "> " + aln1
     
     subprocess.run(cmd, shell=True, check=True)
@@ -166,12 +167,11 @@ def main():
     cmd += "--rc --temp-dir " + temp_dir + " "
     cmd += "--n-threads " + str(args.ncpu) + " "
     cmd += "--query-file " + args.read2 + " "
-    cmd += "--out-file-list " + out_list + " "
-    cmd += "--sort-output"
+    cmd += "--sort-output "
     cmd += " | "
     cmd += ALIGNMENT_WRITER + " "
-    cmd += "-n " + args.ref_num + " "
-    cmd += "-r " + args.read_num + " "
+    cmd += "-n " + str(args.ref_num) + " "
+    cmd += "-r " + str(args.read_num) + " "
     cmd += "> " + aln2
     
     subprocess.run(cmd, shell=True, check=True)

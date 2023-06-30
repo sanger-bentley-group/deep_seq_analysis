@@ -1,8 +1,8 @@
 #!/usr/bin/env bash
 
 lanes_file=$1
-mash_output_dir=$2
-reference=$3
+reference=$2
+mash_output_dir=$3
 threads=4
 
 module load pf
