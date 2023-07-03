@@ -159,7 +159,7 @@ For example:
     /nfs/users/nfs_v/vc11/scratch/ANALYSIS/deep_seq/data/lanes_6461_2.txt \
     /nfs/users/nfs_v/vc11/scratch/ANALYSIS/deep_seq/data/lanes_passed.txt \
     /nfs/users/nfs_v/vc11/scratch/ANALYSIS/deep_seq/data/combined_vietnam_ref.fna \
-    /nfs/users/nfs_v/vc11/scratch/ANALYSIS/deep_seq/data/themisto_index_vietnam_ref2 \
+    /nfs/users/nfs_v/vc11/scratch/ANALYSIS/deep_seq/data/themisto_index_vietnam_ref \
     /nfs/users/nfs_v/vc11/scratch/ANALYSIS/deep_seq/data/GPSC_assignment_external_clusters.csv \
     /nfs/users/nfs_g/gt4/lustre/maela_deep/msweep/seroba/database \
     /nfs/users/nfs_v/vc11/scratch/ANALYSIS/deep_seq/data/msweep_output_v2/6461

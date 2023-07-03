@@ -13,9 +13,9 @@ outdir=$7
 module load pf
 module load shovill/1.1.0--0
 module load seroba/1.0.0=py36_1-c1
-#module load themisto/2.1.0
+module load themisto/2.1.0
 module load mgems/1.3.1--h468198e_0
-#module load msweep/1.6.3--hdbdd923_2
+module load msweep/1.6.3--hdbdd923_2
 module load alignment-writer/0.4.0
 
 # setup
@@ -53,6 +53,6 @@ do
     line_num=$(zcat ${reads_dir}/${lane}_1.fastq.gz | wc -l)
     read_num=$(( line_num / 4 ))
     
-    bsub -G team284 -n8 -M64000 -R"span[hosts=1]" -R"select[mem>64000] rusage[mem=64000]" -q long -o ../log/msweep_${i}.out -e ../log/msweep_${i}.err "python3 run_mSWEEP_pipeline.py --r1 ${reads_dir}/${lane}_1.fastq.gz --r2 ${reads_dir}/${lane}_2.fastq.gz --index ${reference_index} -n ${ref_num} -r ${read_num} --group_column ${col_group_file} --seroba_db ${seroba_db} -o ${outdir} -t 8 --mem 64000"
+    bsub -G team284 -n8 -M64000 -R"span[hosts=1]" -R"select[mem>64000] rusage[mem=64000]" -q normal -o ../log/msweep_${i}.out -e ../log/msweep_${i}.err "python3 run_mSWEEP_pipeline.py --r1 ${reads_dir}/${lane}_1.fastq.gz --r2 ${reads_dir}/${lane}_2.fastq.gz --index ${reference_index} -n ${ref_num} -r ${read_num} --group_column ${col_group_file} --seroba_db ${seroba_db} -o ${outdir} -t 8 --mem 64000"
     
 done
