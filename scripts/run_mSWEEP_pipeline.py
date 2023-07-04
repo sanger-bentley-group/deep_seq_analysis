@@ -194,6 +194,7 @@ def main():
     cmd = MGEMS + " "
     cmd += "-r " + args.read1 + "," + args.read2 + " "
     cmd += "--themisto-alns " + aln1_txt + "," + aln2_txt + " "
+    cmd += "-i " + args.group_column + " "
     cmd += "-o " + args.output_dir + " "
     cmd += "--index " + args.index + " "
     cmd += "--probs " + args.output_dir + "mSWEEP_probs.csv "
