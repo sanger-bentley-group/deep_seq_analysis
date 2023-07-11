@@ -132,7 +132,7 @@ For example:
 ```
 ./run_themisto_build.sh \
     /nfs/users/nfs_v/vc11/scratch/ANALYSIS/deep_seq/data/combined_vietnam_ref.fna \
-    /nfs/users/nfs_v/vc11/scratch/ANALYSIS/deep_seq/data/themisto_index_vietnam_ref2
+    /nfs/users/nfs_v/vc11/scratch/ANALYSIS/deep_seq/data/themisto_index_vietnam_ref
 ```
 
 2. **Run themisto align and mSWEEP**

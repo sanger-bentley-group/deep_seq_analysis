@@ -7,7 +7,7 @@ from collections import defaultdict
 
 THEMISTO_ALIGN = "themisto pseudoalign"
 ALIGNMENT_WRITER = "alignment-writer"
-MSWEEP = "mSWEEP"
+MSWEEP = "/nfs/users/nfs_v/vc11/scratch/ANALYSIS/deep_seq/mSWEEP/build/bin/mSWEEP"
 MGEMS = "mGEMS"
 SHOVILL = "shovill"
 SEROBA = "seroba"
@@ -138,8 +138,8 @@ def main():
         outfile.write(args.read2 + "\n")
 
     out_list = temp_dir + "out_list.txt"
-    aln1_txt = temp_dir + "pseudoalignments_1.txt"
-    aln2_txt = temp_dir + "pseudoalignments_2.txt"
+    #aln1_txt = temp_dir + "pseudoalignments_1.txt"
+    #aln2_txt = temp_dir + "pseudoalignments_2.txt"
     aln1 = temp_dir + "pseudoalignments_1.aln"
     aln2 = temp_dir + "pseudoalignments_2.aln"
     with open(out_list, 'w') as outfile:
@@ -152,10 +152,18 @@ def main():
     cmd += "--rc --temp-dir " + temp_dir + " "
     cmd += "--n-threads " + str(args.ncpu) + " "
     cmd += "--query-file " + args.read1 + " "
-    cmd += "--sort-output "
-    cmd += "--out-file " + aln1_txt
+    #cmd += "--sort-output "
+    #cmd += "--out-file " + aln1_txt
+    cmd += "--out-file >("
+    #cmd += "| "
+    cmd += ALIGNMENT_WRITER + " "
+    #cmd += "-f " + aln1_txt + " "
+    cmd += "-n " + str(args.ref_num) + " "
+    cmd += "-r " + str(args.read_num) + " "
+    cmd += "> " + aln1
+    cmd += ")"
 
-    subprocess.run(cmd, shell=True, check=True)
+    subprocess.run(['/bin/bash', '-c', cmd], check=True)
     
     # generate align command and run for pair 2
     cmd = THEMISTO_ALIGN + " "
@@ -163,21 +171,29 @@ def main():
     cmd += "--rc --temp-dir " + temp_dir + " "
     cmd += "--n-threads " + str(args.ncpu) + " "
     cmd += "--query-file " + args.read2 + " "
-    cmd += "--sort-output "
-    cmd += "--out-file " + aln2_txt
+    #cmd += "--sort-output "
+    #cmd += "--out-file " + aln2_txt
+    cmd += "--out-file >("
+    #cmd += "| "
+    cmd += ALIGNMENT_WRITER + " "
+    #cmd += "-f " + aln1_txt + " "
+    cmd += "-n " + str(args.ref_num) + " "
+    cmd += "-r " + str(args.read_num) + " "
+    cmd += "> " + aln2
+    cmd += ")"
     
-    subprocess.run(cmd, shell=True, check=True)
+    subprocess.run(['/bin/bash', '-c', cmd], check=True)
 
     # run mSWEEP
     print("running mSWEEP")
     cmd = MSWEEP + " "
-    cmd += "--themisto-1 " + aln1_txt + " "
-    cmd += "--themisto-2 " + aln2_txt + " "
+    cmd += "--themisto-1 " + aln1 + " "
+    cmd += "--themisto-2 " + aln2 + " "
     cmd += "-i " + args.group_column + " "
     cmd += "--write-probs "
     cmd += "-t " + str(args.ncpu) + " "
     cmd += "-o " + args.output_dir + "mSWEEP"
-
+    
     subprocess.run(cmd, shell=True, check=True)
 
     # get groups from mSWEEP run with sufficient support
@@ -189,11 +205,14 @@ def main():
             if float(line[1]) >= args.min_abundance:
                 sig_groups.append(line[0])
     
+    # Convert tsv to csv
+    subprocess.run("sed 's/\t/,/g' " + args.output_dir + "mSWEEP_probs.tsv > " + args.output_dir + "mSWEEP_probs.csv", shell=True, check=True)
+
     # run mGEMS
     print("running mGEMS")
     cmd = MGEMS + " "
     cmd += "-r " + args.read1 + "," + args.read2 + " "
-    cmd += "--themisto-alns " + aln1_txt + "," + aln2_txt + " "
+    cmd += "--themisto-alns " + aln1 + "," + aln2 + " "
     cmd += "-i " + args.group_column + " "
     cmd += "-o " + args.output_dir + " "
     cmd += "--index " + args.index + " "
@@ -201,34 +220,6 @@ def main():
     cmd += "-a " + args.output_dir + "mSWEEP_abundances.txt "
     cmd += "--groups " + ",".join(sig_groups)
 
-    subprocess.run(cmd, shell=True, check=True)
-    
-    # Compress
-    cmd = ALIGNMENT_WRITER + " "
-    cmd += "-f " + aln1_txt + " "
-    cmd += "-n " + str(args.ref_num) + " "
-    cmd += "-r " + str(args.read_num) + " "
-    cmd += "> " + aln1
-    
-    subprocess.run(cmd, shell=True, check=True)
-    
-    # Remove decompressed alignment
-    cmd = "rm " + aln1_txt
-    
-    subprocess.run(cmd, shell=True, check=True)
-    
-    # Compress
-    cmd = ALIGNMENT_WRITER + " "
-    cmd += "-f " + aln2_txt + " "
-    cmd += "-n " + str(args.ref_num) + " "
-    cmd += "-r " + str(args.read_num) + " "
-    cmd += "> " + aln2
-    
-    subprocess.run(cmd, shell=True, check=True)
-    
-    # Remove decompressed alignment
-    cmd = "rm " + aln2_txt
-    
     subprocess.run(cmd, shell=True, check=True)
 
     # remove temporary directory and probablities
