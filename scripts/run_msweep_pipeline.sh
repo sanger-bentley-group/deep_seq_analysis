@@ -15,7 +15,7 @@ module load shovill/1.1.0--0
 module load seroba/1.0.0=py36_1-c1
 module load themisto/2.1.0
 module load mgems/1.3.1--h468198e_0
-#module load msweep/1.6.3--hdbdd923_2
+module load msweep/2.0.0
 module load alignment-writer/0.4.0
 
 # setup

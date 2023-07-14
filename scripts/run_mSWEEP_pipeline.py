@@ -7,7 +7,7 @@ from collections import defaultdict
 
 THEMISTO_ALIGN = "themisto pseudoalign"
 ALIGNMENT_WRITER = "alignment-writer"
-MSWEEP = "/nfs/users/nfs_v/vc11/scratch/ANALYSIS/deep_seq/mSWEEP/build/bin/mSWEEP"
+MSWEEP = "mSWEEP"
 MGEMS = "mGEMS"
 SHOVILL = "shovill"
 SEROBA = "seroba"
