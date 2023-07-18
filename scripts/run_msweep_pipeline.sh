@@ -40,8 +40,8 @@ fi
 for ((i=1;i<=${ref_lane_num};i++))
 do
     lane=$(sed -n "${i}p" ${ref_lanes_file})
-    group=$(grep ${lane}, $gpsc_assignment | cut -f2 -d,)
-    echo $group >> ${outdir}/themisto >> $col_group_file
+    group=$(grep ${lane}, $gpsc_assignment | cut -f2 -d, | sed 's/;/or/')
+    echo $group >> $col_group_file
 done
 
 # Run msweep pipeline for each read file
