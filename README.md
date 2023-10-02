@@ -19,7 +19,7 @@ This pipeline deconvolutes mixed-microbial reads into designated groups (e.g. mu
 In your lustre, download this repo.
 
 ```
-git clone https://github.com/blue-moon22/deep_seq_analysis.git
+git clone https://github.com/sanger-bentley-group/deep_seq_analysis.git
 cd deep_seq_analysis
 ```
 
@@ -44,7 +44,7 @@ pf assembly -i <list of reference lanes file> -t file -l <output directory>
 For example:
 
 ```
-pf assembly -i /nfs/users/nfs_v/vc11/scratch/ANALYSIS/deep_seq/data/lanes_passed.txt -t file -l $(pwd)/data/assemblies
+pf assembly -i /data/pam/team284/shared/deep_seq/data/lanes_passed.txt -t file -l /data/pam/team284/shared/deep_seq/data/assemblies
 ```
 
 _\*If you are using GPS, ask a team member where the list of passed lanes can be found_
@@ -62,7 +62,7 @@ bsub.py 16 combine_fastas ./run_combine_fastas.sh <list of reference lanes file>
 For example:
 
 ```
-bsub.py 16 combine_fastas ./run_combine_fastas.sh /nfs/users/nfs_v/vc11/scratch/ANALYSIS/deep_seq/data/lanes_passed.txt /nfs/users/nfs_v/vc11/scratch/ANALYSIS/deep_seq/data/assemblies /nfs/users/nfs_v/vc11/scratch/ANALYSIS/deep_seq/data/combined_vietnam_ref.fna
+bsub.py 16 combine_fastas ./run_combine_fastas.sh /data/pam/team284/shared/deep_seq/data/lanes_passed.txt /data/pam/team284/shared/deep_seq/data/assemblies /data/pam/team284/shared/deep_seq/data/combined_vietnam_ref.fna
 ```
 
 ## Check your reference database
@@ -82,9 +82,9 @@ For example:
 
 ```
 ./run_mash_sketch.sh \
-    /nfs/users/nfs_v/vc11/scratch/ANALYSIS/deep_seq/data/lanes_passed.txt \
-    /nfs/users/nfs_v/vc11/scratch/ANALYSIS/deep_seq/data/assemblies \
-    /nfs/users/nfs_v/vc11/scratch/ANALYSIS/deep_seq/data/mash_sketches_vietnam_ref
+    /data/pam/team284/shared/deep_seq/data/lanes_passed.txt \
+    /data/pam/team284/shared/deep_seq/data/assemblies \
+    /data/pam/team284/shared/deep_seq/data/mash_sketches_vietnam_ref
 ```
 
 2. **Run mash paste (i.e. combine mash references)**
@@ -98,7 +98,7 @@ bsub.py 16 mash_paste ./run_mash_paste.sh <mash sketches directory> <output mash
 For example:
 
 ```
-bsub.py 16 mash_paste ./run_mash_paste.sh /nfs/users/nfs_v/vc11/scratch/ANALYSIS/deep_seq/data/mash_sketches_vietnam_ref /nfs/users/nfs_v/vc11/scratch/ANALYSIS/deep_seq/data/vietnam_combined_ref.msh
+bsub.py 16 mash_paste ./run_mash_paste.sh /data/pam/team284/shared/deep_seq/data/mash_sketches_vietnam_ref /data/pam/team284/shared/deep_seq/data/vietnam_combined_ref.msh
 ```
 
 3. **Run mash screen (i.e. map deep sequences against mash reference)**
@@ -110,7 +110,7 @@ bsub.py 16 mash_screen ./run_mash_screen.sh <list of deep seq lanes file> <combi
 For example:
 
 ```
-bsub.py 16 mash_screen ./run_mash_screen.sh /nfs/users/nfs_v/vc11/scratch/ANALYSIS/deep_seq/data/lanes_6461_v2.txt /nfs/users/nfs_v/vc11/scratch/ANALYSIS/deep_seq/data/vietnam_combined_ref.msh /nfs/users/nfs_v/vc11/scratch/ANALYSIS/deep_seq/data/mash_output_vietnam_6461_v2
+bsub.py 16 mash_screen ./run_mash_screen.sh /data/pam/team284/shared/deep_seq/data/lanes_6461_v2.txt /data/pam/team284/shared/deep_seq/data/vietnam_combined_ref.msh /data/pam/team284/shared/deep_seq/data/mash_output_vietnam_6461_v2
 ```
 
 4. **Assessment**
@@ -131,8 +131,8 @@ For example:
 
 ```
 ./run_themisto_build.sh \
-    /nfs/users/nfs_v/vc11/scratch/ANALYSIS/deep_seq/data/combined_vietnam_ref.fna \
-    /nfs/users/nfs_v/vc11/scratch/ANALYSIS/deep_seq/data/themisto_index_vietnam_ref
+    /data/pam/team284/shared/deep_seq/data/combined_vietnam_ref.fna \
+    /data/pam/team284/shared/deep_seq/data/themisto_index_vietnam_ref
 ```
 
 2. **Run themisto align and mSWEEP**
@@ -156,13 +156,13 @@ For example:
 
 ```
 ./run_msweep_pipeline.sh \
-    /nfs/users/nfs_v/vc11/scratch/ANALYSIS/deep_seq/data/lanes_6461_2.txt \
-    /nfs/users/nfs_v/vc11/scratch/ANALYSIS/deep_seq/data/lanes_passed.txt \
-    /nfs/users/nfs_v/vc11/scratch/ANALYSIS/deep_seq/data/combined_vietnam_ref.fna \
-    /nfs/users/nfs_v/vc11/scratch/ANALYSIS/deep_seq/data/themisto_index_vietnam_ref \
-    /nfs/users/nfs_v/vc11/scratch/ANALYSIS/deep_seq/data/GPSC_assignment_external_clusters.csv \
+    /data/pam/team284/shared/deep_seq/data/lanes_6461_2.txt \
+    /data/pam/team284/shared/deep_seq/data/lanes_passed.txt \
+    /data/pam/team284/shared/deep_seq/data/combined_vietnam_ref.fna \
+    /data/pam/team284/shared/deep_seq/data/themisto_index_vietnam_ref \
+    /data/pam/team284/shared/deep_seq/data/GPSC_assignment_external_clusters.csv \
     /nfs/users/nfs_g/gt4/lustre/maela_deep/msweep/seroba/database \
-    /nfs/users/nfs_v/vc11/scratch/ANALYSIS/deep_seq/data/msweep_output_v2/6461
+    /data/pam/team284/shared/deep_seq/data/msweep_output_v2/6461
 ```
 
 ## Outputs from pipeline
@@ -182,16 +182,16 @@ Create phylogenetic trees from deconvoluted reads [using snippy, gubbins, snp-si
 In the scripts directory:
 ```
 # Create an input.txt file for snippy
-find /nfs/users/nfs_v/vc11/scratch/ANALYSIS/deep_seq/data/msweep_output/6461/*/ /nfs/users/nfs_v/vc11/scratch/ANALYSIS/deep_seq/data/msweep_output/6463/*/ -type f -name "*_1.fastq.gz" > ../data/path_to_reads_1.txt
-find /nfs/users/nfs_v/vc11/scratch/ANALYSIS/deep_seq/data/msweep_output/6461/*/ /nfs/users/nfs_v/vc11/scratch/ANALYSIS/deep_seq/data/msweep_output/6463/*/ -type f -name "*_2.fastq.gz" > ../data/path_to_reads_2.txt
+find /data/pam/team284/shared/deep_seq/data/msweep_output/6461/*/ /data/pam/team284/shared/deep_seq/data/msweep_output/6463/*/ -type f -name "*_1.fastq.gz" > ../data/path_to_reads_1.txt
+find /data/pam/team284/shared/deep_seq/data/msweep_output/6461/*/ /data/pam/team284/shared/deep_seq/data/msweep_output/6463/*/ -type f -name "*_2.fastq.gz" > ../data/path_to_reads_2.txt
 cat ../data/path_to_reads_1.txt | awk -F/ '{print $12"_"$13}' | awk -F'_1.fastq.gz' '{print $1}' > ../data/msweep_samples.txt
 paste -d $'\t' ../data/msweep_samples.txt ../data/path_to_reads_1.txt ../data/path_to_reads_2.txt | grep -v "_NA" > ../data/snippy_input.tab
 
 # Build trees (tested with 10)
 head ../data/snippy_input.tab > ../data/snippy_input_head.tab
-bsub -G team284 -q normal -J build_tree -o ../log/build_tree.out -e ../log/build_tree.err -R"span[hosts=1]" -R "select[mem>16000] rusage[mem=16000]" -M16000 -n 4 "./run_build_trees.sh /nfs/users/nfs_v/vc11/scratch/ANALYSIS/deep_seq/data/snippy_input_head.tab /data/pam/applications/vr-pipelines/refs/Streptococcus/pneumoniae_ATCC_700669/Streptococcus_pneumoniae_ATCC_700669_v1.fa 4 ../data/test_build_tree"
+bsub -G team284 -q normal -J build_tree -o ../log/build_tree.out -e ../log/build_tree.err -R"span[hosts=1]" -R "select[mem>16000] rusage[mem=16000]" -M16000 -n 4 "./run_build_trees.sh /data/pam/team284/shared/deep_seq/data/snippy_input_head.tab /data/pam/applications/vr-pipelines/refs/Streptococcus/pneumoniae_ATCC_700669/Streptococcus_pneumoniae_ATCC_700669_v1.fa 4 ../data/test_build_tree"
 
 # Build trees (not implemented)
-bsub -G team284 -q normal -J build_tree -o ../log/build_tree.out -e ../log/build_tree.err -R"span[hosts=1]" -R "select[mem>64000] rusage[mem=64000]" -M64000 -n 16 "./run_build_trees.sh /nfs/users/nfs_v/vc11/scratch/ANALYSIS/deep_seq/data/snippy_input.tab /data/pam/applications/vr-pipelines/refs/Streptococcus/pneumoniae_ATCC_700669/Streptococcus_pneumoniae_ATCC_700669_v1.fa 16 <your_output_directory_here>"
+bsub -G team284 -q normal -J build_tree -o ../log/build_tree.out -e ../log/build_tree.err -R"span[hosts=1]" -R "select[mem>64000] rusage[mem=64000]" -M64000 -n 16 "./run_build_trees.sh /data/pam/team284/shared/deep_seq/data/snippy_input.tab /data/pam/applications/vr-pipelines/refs/Streptococcus/pneumoniae_ATCC_700669/Streptococcus_pneumoniae_ATCC_700669_v1.fa 16 <your_output_directory_here>"
 ```
 
