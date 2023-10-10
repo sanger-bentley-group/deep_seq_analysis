@@ -223,7 +223,7 @@ def main():
     subprocess.run(cmd, shell=True, check=True)
 
     # remove temporary directory and probablities
-    # shutil.rmtree(temp_dir)
+    shutil.rmtree(temp_dir)
     # os.remove(args.output_dir + "mSWEEP_probs.csv")
 
     # assemble genomes using Shovill
