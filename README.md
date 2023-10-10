@@ -173,7 +173,6 @@ The output files can be found in study folders within the msweep output director
 - `seroba_calls.tab`: the serotypes found
 - `fastq.gz` files: the reads that have been identified belonging to a particular GPSC
 - directories named after the GPSC number: contain the assemblies of the GPSCs as `contigs.fa` and the serotype in `*_seroba` directory _(Note: NA may exist if there were alignments to isolate genome(s) that had no GPSC)_
-- `tmp` directory: contains the alignment files where the deep sequences were aligned (with Themisto) to the reference
 
 ## Build phylogenetic trees from output deconvoluted reads
 
