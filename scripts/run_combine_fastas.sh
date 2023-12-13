@@ -1,15 +1,18 @@
 #!/usr/bin/env bash
 
-lanes_file=$1
-assemblies_dir=$2
-combined_file=$3
+assemblies_dir=$1
+combined_file=$2
 
-rm ${combined_file}
-num=$(cat ${lanes_file} | wc -l)
 
-for ((i=1;i<=${num};i++))
-do 
-    lane=$(sed -n "${i}p" ${lanes_file})
-    echo ">${lane/\#/\_}" >> ${combined_file}
-    sed '/>/d' ${assemblies_dir}/${lane}.contigs_velvet.fa >> ${combined_file}
+if [ -f ${combined_file} ]
+then
+    rm ${combined_file}
+fi
+
+
+for assembly in ${assemblies_dir}/*.fa
+do
+    sample=$(realpath ${assembly} | awk -F "/" '{ print $NF }' | awk -F "." '{ print $1 }')
+    echo ">${sample/\#/\_}" >> ${combined_file}
+    sed '/>/d' ${assembly} >> ${combined_file}
 done
