@@ -29,7 +29,7 @@ ref_num=$(grep "^>" $reference_fna | wc -l)
 
 # Create col group file from GPSC assignment
 col_group_file=${outdir}/col_groups.txt
-#ref_lane_num=$(cat ${ref_lanes_file} | wc -l)
+
 
 if [ -f $col_group_file ]
 then
