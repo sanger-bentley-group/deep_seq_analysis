@@ -12,7 +12,7 @@ fi
 
 for assembly in ${assemblies_dir}/*.fa
 do
-    sample=$(realpath ${assembly} | awk -F "/" '{ print $NF }' | awk -F "." '{ print $1 }')
+    sample=$(realpath -s ${assembly} | awk -F "/" '{ print $NF }' | awk -F "." '{ print $1 }')
     echo ">${sample/\#/\_}" >> ${combined_file}
     sed '/>/d' ${assembly} >> ${combined_file}
 done

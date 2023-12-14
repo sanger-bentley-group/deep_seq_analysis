@@ -131,8 +131,8 @@ You will also need:
 
 ```
 ./run_msweep_pipeline.sh \
-    <list of deep seq lanes file> \
-    <list of reference lanes file> \
+    <path to reference assembly files> \
+    <path to input fastq files> \
     <reference fna> \
     <themisto index> \
     <gpsc assignment csv> \
@@ -144,8 +144,8 @@ For example:
 
 ```
 ./run_msweep_pipeline.sh \
-    /data/pam/team284/shared/deep_seq/data/lanes_6461_2.txt \
-    /data/pam/team284/shared/deep_seq/data/lanes_passed.txt \
+    /data/pam/team284/shared/deep_seq/data/ref_assemblies \
+    /data/pam/team284/shared/deep_seq/data/input_fastqs \
     /data/pam/team284/shared/deep_seq/data/combined_vietnam_ref.fna \
     /data/pam/team284/shared/deep_seq/data/themisto_index_vietnam_ref \
     /data/pam/team284/shared/deep_seq/data/GPSC_assignment_external_clusters.csv \
