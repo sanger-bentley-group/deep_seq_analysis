@@ -33,36 +33,28 @@ First go into your lustre and create a directory for your analysis.
 mkdir -p data
 ```
 
-Then create symlinks of isolate assemblies from a list of lanes.
-
-```
-module load pf
-
-pf assembly -i <list of reference lanes file> -t file -l <output directory>
-```
+Create a directory with all your assemblies in
 
 For example:
 
 ```
-pf assembly -i /data/pam/team284/shared/deep_seq/data/lanes_passed.txt -t file -l /data/pam/team284/shared/deep_seq/data/assemblies
+mkdir -p data/assemblies
 ```
 
-_\*If you are using GPS, ask a team member where the list of passed lanes can be found_
+_\*If you are using GPS, ask a team member where the list of passed samples can be found_
 
 2. **Combine isolate assemblies to make one reference FASTA**
 
 In the scripts directory:
 
 ```
-module load bsub.py
-
-bsub.py 16 combine_fastas ./run_combine_fastas.sh <list of reference lanes file> <assemblies directory> <output combined fna file>
+./run_combine_fastas.sh <assemblies directory> <output combined fna file>
 ```
 
 For example:
 
 ```
-bsub.py 16 combine_fastas ./run_combine_fastas.sh /data/pam/team284/shared/deep_seq/data/lanes_passed.txt /data/pam/team284/shared/deep_seq/data/assemblies /data/pam/team284/shared/deep_seq/data/combined_vietnam_ref.fna
+./run_combine_fastas.sh data/assemblies combined_vietnam_ref.fna
 ```
 
 ## Check your reference database
@@ -73,7 +65,6 @@ Classifying your reads to lineages from your deep-sequenced mixed-microbial samp
 
 ```
 ./run_mash_sketch.sh \
-    <list of reference lanes> \
     <assemblies directory> \
     <output mash sketches directory>
 ```
@@ -82,7 +73,6 @@ For example:
 
 ```
 ./run_mash_sketch.sh \
-    /data/pam/team284/shared/deep_seq/data/lanes_passed.txt \
     /data/pam/team284/shared/deep_seq/data/assemblies \
     /data/pam/team284/shared/deep_seq/data/mash_sketches_vietnam_ref
 ```
@@ -90,27 +80,25 @@ For example:
 2. **Run mash paste (i.e. combine mash references)**
 
 ```
-module load bsub.py
-
-bsub.py 16 mash_paste ./run_mash_paste.sh <mash sketches directory> <output mash file>
+bsub.py 8 mash_paste ./run_mash_paste.sh <mash sketches directory> <output mash file>
 ```
 
 For example:
 
 ```
-bsub.py 16 mash_paste ./run_mash_paste.sh /data/pam/team284/shared/deep_seq/data/mash_sketches_vietnam_ref /data/pam/team284/shared/deep_seq/data/vietnam_combined_ref.msh
+bsub.py 8 mash_paste ./run_mash_paste.sh /data/pam/team284/shared/deep_seq/data/mash_sketches_vietnam_ref /data/pam/team284/shared/deep_seq/data/vietnam_combined_ref.msh
 ```
 
 3. **Run mash screen (i.e. map deep sequences against mash reference)**
 
 ```
-bsub.py 16 mash_screen ./run_mash_screen.sh <list of deep seq lanes file> <combined mash reference> <output mash screens directory>
+./run_mash_screen.sh <fastq_folder> <combined mash reference> <output mash screens directory>
 ```
 
 For example:
 
 ```
-bsub.py 16 mash_screen ./run_mash_screen.sh /data/pam/team284/shared/deep_seq/data/lanes_6461_v2.txt /data/pam/team284/shared/deep_seq/data/vietnam_combined_ref.msh /data/pam/team284/shared/deep_seq/data/mash_output_vietnam_6461_v2
+./run_mash_screen.sh /data/pam/team284/shared/deep_seq/data/fastqs /data/pam/team284/shared/deep_seq/data/vietnam_combined_ref.msh /data/pam/team284/shared/deep_seq/data/mash_output_vietnam_6461_v2
 ```
 
 4. **Assessment**
@@ -143,8 +131,8 @@ You will also need:
 
 ```
 ./run_msweep_pipeline.sh \
-    <list of deep seq lanes file> \
-    <list of reference lanes file> \
+    <path to reference assembly files> \
+    <path to input fastq files> \
     <reference fna> \
     <themisto index> \
     <gpsc assignment csv> \
@@ -156,8 +144,8 @@ For example:
 
 ```
 ./run_msweep_pipeline.sh \
-    /data/pam/team284/shared/deep_seq/data/lanes_6461_2.txt \
-    /data/pam/team284/shared/deep_seq/data/lanes_passed.txt \
+    /data/pam/team284/shared/deep_seq/data/ref_assemblies \
+    /data/pam/team284/shared/deep_seq/data/input_fastqs \
     /data/pam/team284/shared/deep_seq/data/combined_vietnam_ref.fna \
     /data/pam/team284/shared/deep_seq/data/themisto_index_vietnam_ref \
     /data/pam/team284/shared/deep_seq/data/GPSC_assignment_external_clusters.csv \
