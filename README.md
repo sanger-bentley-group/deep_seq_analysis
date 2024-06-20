@@ -23,7 +23,7 @@ git clone https://github.com/sanger-bentley-group/deep_seq_analysis.git
 cd deep_seq_analysis
 ```
 
-## Create a reference database (using lanes from pf)
+## Create a reference database
 
 1. **Get your isolate assemblies (only lanes that have passed QC\*)**
 
