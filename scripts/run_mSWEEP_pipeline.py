@@ -253,9 +253,10 @@ def main():
 
     with open(args.output_dir + "seroba_calls.tab", 'w') as outfile:
         for group in sig_groups:
-            with open(args.output_dir + group + '/' + group + "_seroba/pred.tsv", 'r') as infile:
+            with open(args.output_dir + group + '/' + group + "_seroba/pred.csv", 'r') as infile:
+                next(infile)
                 for line in infile:
-                    outfile.write(prefix + "\t" + line)
+                    outfile.write(prefix + "\t" + line.split(",")[2])
 
     return
 
