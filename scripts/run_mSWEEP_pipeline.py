@@ -256,7 +256,7 @@ def main():
             with open(args.output_dir + group + '/' + group + "_seroba/pred.csv", 'r') as infile:
                 next(infile)
                 for line in infile:
-                    outfile.write(prefix + "\t" + line.split(",")[2])
+                    outfile.write(prefix + "\t" + line.split(",")[2] + "\n")
 
     return
 
