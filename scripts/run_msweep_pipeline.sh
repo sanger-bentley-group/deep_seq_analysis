@@ -11,7 +11,7 @@ outdir=$7
 
 # modules
 module load shovill/1.1.0--0
-module load seroba/2.0.1
+module load seroba/2.0.3
 module load themisto/2.1.0
 module load mgems/1.3.1--h468198e_0
 module load msweep/2.0.0
